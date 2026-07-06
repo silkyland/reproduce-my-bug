@@ -1,3 +1,5 @@
+![reproduce-my-bug social preview](assets/social-preview.png)
+
 # reproduce-my-bug
 
 **No fix without a failing reproduction — turn "it breaks sometimes" into
