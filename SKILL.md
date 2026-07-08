@@ -37,9 +37,13 @@ the repo a permanent regression guard for free.
 
 1. **Read-only on app code.** The only writes are the repro artifacts
    (a test file, a repro script, seed data) in clearly marked locations.
-2. **Never investigate against production.** Reproduce on local/dev with
-   seeded data (the seed-ah skill is the companion for this). Production
-   supplies evidence (logs, traces) — never the test bench.
+2. **Never investigate against production — and read-only on anything
+   shared.** Reproduce on local/dev with seeded data (the seed-ah skill
+   is the companion for this). Production supplies evidence (logs,
+   traces) — never the test bench. Every command against a shared
+   environment must be non-mutating (log reads, `SELECT`s). Mutating
+   state anywhere outside your local bench is **ONE-WAY**: name the
+   exact command and get explicit user confirmation before running it.
 3. **One variable at a time.** Change one thing per attempt and record the
    outcome — including failures to reproduce; an eliminated hypothesis is
    progress, and unrecorded attempts get repeated.
@@ -55,8 +59,9 @@ Repro Progress:
 - [ ] Step 1: Intake — symptom, expected vs actual, environment, frequency, first-seen
 - [ ] Step 2: Evidence sweep — logs, traces, git history, data state; hypotheses ranked
 - [ ] Step 3: Path trace — code path from symptom backward, file:line map
-- [ ] Step 4: Reproduce — failing test or script, one variable at a time
-- [ ] Step 5: Minimize — every remaining step load-bearing
+- [ ] Repro Plan Gate — top hypothesis, path, and repro form confirmed before heavy setup
+- [ ] Step 4: Reproduce — runnability proven (attempt #0), then failing test or script, one variable at a time
+- [ ] Step 5: Minimize — every survivor proven load-bearing by a recorded removal attempt
 - [ ] Step 6: (flaky only) determinism forced or reproduction rate documented
 - [ ] Step 7: Dossier delivered — REPRO.md + the failing artifact, handoff stated
 ```
@@ -86,7 +91,9 @@ diffs between working and broken environments.
 
 Output: a **ranked hypothesis list** — ranked by what the evidence
 supports, not by what training data says usually breaks. Each hypothesis
-names the evidence for it and what observation would kill it.
+names the evidence for it and what observation would kill it. The ledger
+is **append-only**: a killed hypothesis is demoted with its killer, never
+deleted — eliminations are the proof the investigation was real.
 
 ## Step 3 — Path trace
 
@@ -94,6 +101,16 @@ From the symptom backward: the error's `file:line` → what calls it → where
 the offending value/state originates. Map the suspect path with citations
 before building anything — a repro built on the wrong path reproduces the
 wrong bug.
+
+**Repro Plan Gate** — before building anything heavier than a one-file
+test (prod-like seed data, containers, hammer rigs, a long bisect),
+present a compact brief in chat: the top hypothesis, the suspect path
+(`file:line`), the planned repro form (test / script / manual), and what
+the setup costs. Ask for confirmation **once** — changing course here
+costs one message; discovering the wrong hypothesis after an hour of
+container setup costs the hour. If the user cannot respond (headless
+run), proceed with the cheapest attempts and tag heavy setup
+`UNCONFIRMED` in the dossier.
 
 ## Step 4 — Reproduce
 
@@ -108,6 +125,12 @@ preference (details in
 3. **Documented manual steps** with exact data — last resort, only when
    automation is genuinely impossible, and say why.
 
+**Attempt #0 is the runnability spike:** before writing the repro, prove
+the suspect path executes locally at all — run the module's existing
+tests or hit the endpoint once, and record the result as attempt #0 in
+the log. If the path cannot run locally, that blocker is the first
+finding to report, not a silent detour.
+
 Work hypothesis by hypothesis, one variable at a time, recording every
 attempt in the dossier's log — reproduced or not.
 
@@ -116,7 +139,10 @@ attempt in the dossier's log — reproduced or not.
 Shrink until every remaining element is load-bearing: drop steps, shrink
 data, remove setup — if removing X still reproduces, X was noise. The
 minimal repro is the root cause's silhouette; it often makes the cause
-obvious without further investigation.
+obvious without further investigation. Minimization is done only when
+every surviving element has an attempt-log row showing its removal made
+the repro pass (or a one-line reason removal is impossible) — "looks
+minimal" is not a criterion.
 
 ## Step 6 — Flaky bugs (the "sometimes" path)
 
@@ -140,6 +166,10 @@ bonus; **the repro is the deliverable** — and the handoff: the failing
 test is the fix's acceptance criterion and future regression guard. For
 fixes that need real design, recommend deep-plan with this dossier as
 input.
+
+Before presenting, self-grade the dossier against the template's
+**Quality bar** item by item — a failing item sends you back to the step
+that fills it, not into the report.
 
 Report inline: repro status (deterministic / rate-based / not yet),
 the one command to run it, and the top suspect with its evidence.

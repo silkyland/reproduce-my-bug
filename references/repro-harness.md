@@ -37,6 +37,11 @@ harness can be built.
 
 ## The one-variable loop
 
+Attempt #0 is always the **runnability spike**: prove the suspect path
+executes locally (run the module's existing tests, hit the endpoint
+once) before building anything on it. A path that can't run locally is
+the first blocker to report, not a silent detour.
+
 ```
 pick top hypothesis → design smallest attempt that isolates it
 → run → record (reproduced? exact output?)
@@ -59,7 +64,10 @@ From a working repro, remove one element at a time and re-run:
 
 Stop when removing ANY remaining element makes it pass. That set is the
 bug's true precondition list — paste it into the dossier as "triggering
-conditions". Delta debugging in spirit; discipline over tooling.
+conditions", each citing the attempt # whose removal-then-pass run
+proved it load-bearing. Minimal is a measured property, not an
+impression: an element with no removal attempt on record is not proven
+load-bearing. Delta debugging in spirit; discipline over tooling.
 
 ## Traps
 

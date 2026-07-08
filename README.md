@@ -30,15 +30,19 @@ every remaining step is load-bearing.
    ("started after deploy X" makes X a suspect, not a culprit) is called
    out explicitly.
 3. **Path trace** — the code path from symptom backward, `file:line`
-   mapped before building anything.
-4. **Reproduce** — one variable at a time, every attempt logged (failed
-   attempts are eliminations, and unrecorded attempts get repeated).
-   Preference order: failing test in the repo's own framework > committed
-   repro script that checks its own outcome > documented manual steps
-   (with the reason automation was impossible).
+   mapped before building anything. A compact **Repro Plan Gate**
+   confirms the top hypothesis and planned repro form before any heavy
+   setup (containers, prod-like seeds, hammer rigs) is built.
+4. **Reproduce** — attempt #0 proves the suspect path even runs locally,
+   then one variable at a time, every attempt logged (failed attempts
+   are eliminations, and unrecorded attempts get repeated). Preference
+   order: failing test in the repo's own framework > committed repro
+   script that checks its own outcome > documented manual steps (with
+   the reason automation was impossible).
 5. **Minimize** — remove anything; if it still fails, it was noise. What
    remains is the bug's true precondition list — often the root cause's
-   silhouette.
+   silhouette — and every surviving element is proven load-bearing by a
+   recorded removal attempt, not by impression.
 6. **Flaky path** — "sometimes" gets its own protocol: measure the
    baseline rate, identify the nondeterminism source (races, clock,
    ordering, seeds, network, cache, test pollution — each with its tell

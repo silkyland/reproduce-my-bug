@@ -27,8 +27,8 @@ dossier is the deliverable a fixer can pick up cold.
     <paste the actual red output>
 
 - **Triggering conditions** (all load-bearing — removing any makes it pass):
-  1. <e.g. row with discount = NULL (pre-2026_05 migration rows)>
-  2. <e.g. locale th_TH — date parse path>
+  1. <e.g. row with discount = NULL (pre-2026_05 migration rows)> — proven by attempt #<n>
+  2. <e.g. locale th_TH — date parse path> — proven by attempt #<n>
 - (Flaky) **Forcing recipe:** <frozen clock / seed / hammer script> — rate <n/N> without forcing.
 
 ## Evidence timeline
@@ -49,6 +49,7 @@ dossier is the deliverable a fixer can pick up cold.
 
 | # | Changed (one variable) | Result |
 |---|------------------------|--------|
+| 0 | runnability spike — ran module's existing tests locally | path executes |
 | 1 | replayed request with prod payload | no repro |
 | 2 | + discount=NULL row | **reproduced** |
 
@@ -57,6 +58,9 @@ dossier is the deliverable a fixer can pick up cold.
 - This failing test is the fix's acceptance criterion — the fix is done
   when it turns green WITHOUT editing the test's assertions.
 - Keep the test after the fix: it is the permanent regression guard.
+- **This repro stops reproducing when:** <the drift that breaks it —
+  dependency upgrade, seed data migrated, clock unfrozen, locale change>.
+  Re-check these before trusting a green run as a fix.
 - <If the fix needs design: run deep-plan with this dossier as input.>
 - <Monitoring to add if NOT-YET-REPRODUCED.>
 ```
@@ -69,5 +73,12 @@ dossier is the deliverable a fixer can pick up cold.
   under a minute and watch it fail.
 - Every timeline row has a source; every killed hypothesis names its
   killer; nothing in the dossier is remembered — it's all quoted.
+- The attempt log starts at #0 (the runnability spike), and every
+  triggering condition cites the attempt # that proved it load-bearing.
+- The hypothesis ledger is append-only — killed hypotheses are retained,
+  never deleted.
+- No command in the evidence timeline mutated production or shared
+  state; any heavy setup was confirmed at the Repro Plan Gate or is
+  tagged `UNCONFIRMED`.
 - The status line never oversells: rate-based is labeled rate-based,
   not-yet is labeled not-yet.

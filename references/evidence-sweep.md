@@ -19,11 +19,14 @@ BY the evidence.
    (lockfile diffs!), config changes, migrations.
    **`git bisect`** when a known-good commit exists and the repro is
    cheap — it converts history into a binary search and often ends the
-   investigation outright.
+   investigation outright. Run bisect in a separate clone or worktree,
+   never the user's working tree.
 4. **The data** — bugs that "only happen to some users" are usually data:
    find the triggering row/document and diff it against a working one
    (null where code assumes value, unexpected enum, boundary length,
-   unicode, timezone).
+   unicode, timezone). Queries against shared or real databases are
+   read-only (`SELECT` only) — copy the triggering row into the local
+   bench; never edit it in place.
 5. **Environment diffs** — works-on-my-machine = diff the machines:
    versions (runtime, dependencies via lockfile), config/env vars,
    locale/timezone, data volume.
@@ -52,3 +55,8 @@ Every sweep artifact goes into the dossier's evidence section with a
 citation (log path + timestamp, commit hash, query). Investigations
 without a written trail loop: you will re-check the same log twice and
 re-suspect the same innocent commit.
+
+The hypothesis ledger is **append-only**: killed hypotheses stay listed
+with what killed them. A ledger with zero eliminations is a red flag —
+it usually means attempts went unrecorded, not that the first guess was
+right.
