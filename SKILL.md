@@ -173,3 +173,14 @@ that fills it, not into the report.
 
 Report inline: repro status (deterministic / rate-based / not yet),
 the one command to run it, and the top suspect with its evidence.
+
+## When things go wrong
+
+| Situation | Response |
+|-----------|----------|
+| **Bug not reproducible locally** | Tag as NOT-YET-REPRODUCED; deliver dossier with evidence, eliminated hypotheses, and monitoring to add for next occurrence |
+| **Suspect path cannot run locally** | Report the blocker as first finding; do not silently detour — path runnability is attempt #0 |
+| **User cannot respond at Repro Plan Gate (headless)** | Proceed with cheapest attempts only; tag heavy setup (containers, prod-like data) as UNCONFIRMED in dossier |
+| **Flaky bug — determinism unreachable** | Deliver rate-based repro with measured rate (e.g. "8/10 runs") plus forcing recipe and loop script — honest and actionable |
+| **Production access needed for evidence** | Read-only queries only (`SELECT`, log reads); any mutating command requires explicit user confirmation with exact command named |
+| **Fix discovered during reproduction** | Note as suspected root cause but finish the repro first — the red test is what makes the fix provable |
