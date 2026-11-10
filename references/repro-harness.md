@@ -23,7 +23,8 @@ Rules:
 ## Form 2 — Repro script
 
 When the bug spans processes (HTTP + queue + DB) or the test harness
-can't reach it: a committed script (`repro/<slug>.sh` or `.php`/`.py`)
+can't reach it: a script kept in the repo (`repro/<slug>.sh` or
+`.php`/`.py` — checked in or left for the user to commit)
 that seeds the minimal state, performs the exact actions (curl calls,
 CLI commands), and **checks the outcome itself** — exits non-zero with a
 message on bug-present, so it's still "runnable and fails on demand".

@@ -37,6 +37,9 @@ the repo a permanent regression guard for free.
 
 1. **Read-only on app code.** The only writes are the repro artifacts
    (a test file, a repro script, seed data) in clearly marked locations.
+   Temporary instrumentation (debug logging, probes) is permitted when it
+   is the only way to observe the bug — reverted before delivery and
+   recorded as an attempt.
 2. **Never investigate against production — and read-only on anything
    shared.** Reproduce on local/dev with seeded data (the seed-ah skill
    is the companion for this). Production supplies evidence (logs,
@@ -80,6 +83,10 @@ Pin the report down before touching anything:
 Missing answers are fine — mark them `UNKNOWN` and let evidence fill them;
 never invent them.
 
+A `[project-root]` argument names the repo — verify it exists, then read
+its `AGENTS.md`/knowledge files before sweeping; they often hold the
+commands and conventions the repro must match.
+
 ## Step 2 — Evidence sweep
 
 Collect before theorizing — method in
@@ -93,7 +100,10 @@ Output: a **ranked hypothesis list** — ranked by what the evidence
 supports, not by what training data says usually breaks. Each hypothesis
 names the evidence for it and what observation would kill it. The ledger
 is **append-only**: a killed hypothesis is demoted with its killer, never
-deleted — eliminations are the proof the investigation was real.
+deleted — eliminations are the proof the investigation was real. Create
+the `REPRO.md` skeleton now (per references/dossier-template.md) and append
+each attempt as it happens — it is the resumable state for long runs, not
+a Step 7 afterthought.
 
 ## Step 3 — Path trace
 

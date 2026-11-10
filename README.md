@@ -36,8 +36,8 @@ every remaining step is load-bearing.
 4. **Reproduce** — attempt #0 proves the suspect path even runs locally,
    then one variable at a time, every attempt logged (failed attempts
    are eliminations, and unrecorded attempts get repeated). Preference
-   order: failing test in the repo's own framework > committed repro
-   script that checks its own outcome > documented manual steps (with
+   order: failing test in the repo's own framework > repro script kept in
+   the repo that checks its own outcome > documented manual steps (with
    the reason automation was impossible).
 5. **Minimize** — remove anything; if it still fails, it was noise. What
    remains is the bug's true precondition list — often the root cause's
